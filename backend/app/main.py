@@ -1,11 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import hotels, activities, transfers, meals, customers, enquiries, itineraries, quotes
-from app.core.database import engine
-from app.models import models
 
-# Create database tables
-models.Base.metadata.create_all(bind=engine)
+# Note: Database tables should be created using Alembic migrations
+# Run: alembic upgrade head
 
 app = FastAPI(
     title="Itinerary Builder API",
