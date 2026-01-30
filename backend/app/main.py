@@ -1,14 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import hotels, activities, transfers, meals, customers, enquiries, itineraries, quotes
+from app.api.endpoints import (
+    hotels, activities, transfers, meals, customers, 
+    enquiries, itineraries, quotes, currencies, dmcs, packages
+)
 
 # Note: Database tables should be created using Alembic migrations
 # Run: alembic upgrade head
 
 app = FastAPI(
     title="Itinerary Builder API",
-    description="Full-stack itinerary builder application API",
-    version="1.0.0"
+    description="Full-stack itinerary builder application API with multi-currency and DMC support",
+    version="2.0.0"
 )
 
 # Configure CORS
@@ -29,13 +32,24 @@ app.include_router(customers.router, prefix="/api/customers", tags=["Customers"]
 app.include_router(enquiries.router, prefix="/api/enquiries", tags=["Enquiries"])
 app.include_router(itineraries.router, prefix="/api/itineraries", tags=["Itineraries"])
 app.include_router(quotes.router, prefix="/api/quotes", tags=["Quotes"])
+app.include_router(currencies.router, prefix="/api/currencies", tags=["Currencies"])
+app.include_router(dmcs.router, prefix="/api/dmcs", tags=["DMCs"])
+app.include_router(packages.router, prefix="/api/packages", tags=["Packages"])
 
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to Itinerary Builder API"}
+    return {
+        "message": "Welcome to Itinerary Builder API v2.0",
+        "features": [
+            "Multi-currency support",
+            "DMC management",
+            "Package templates with options",
+            "Automated exchange rate updates"
+        ]
+    }
 
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "version": "2.0.0"}

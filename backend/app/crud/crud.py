@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional, Type, TypeVar, Generic
 from app.models import models
 from app.schemas import schemas
+from decimal import Decimal
 
 ModelType = TypeVar("ModelType")
 CreateSchemaType = TypeVar("CreateSchemaType")
@@ -48,6 +49,68 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.delete(obj)
         db.commit()
         return obj
+
+
+# Currency CRUD
+class CRUDCurrency(CRUDBase[models.Currency, schemas.CurrencyCreate, schemas.CurrencyUpdate]):
+    def get_by_code(self, db: Session, *, code: str) -> Optional[models.Currency]:
+        return db.query(models.Currency).filter(models.Currency.code == code).first()
+    
+    def get_base_currency(self, db: Session) -> Optional[models.Currency]:
+        return db.query(models.Currency).filter(models.Currency.is_base_currency == True).first()
+    
+    def get_active_currencies(self, db: Session) -> List[models.Currency]:
+        return db.query(models.Currency).filter(models.Currency.is_active == True).all()
+
+
+# Exchange Rate CRUD
+class CRUDExchangeRate(CRUDBase[models.ExchangeRate, schemas.ExchangeRateCreate, schemas.ExchangeRateUpdate]):
+    def get_latest_rate(
+        self, db: Session, *, from_currency_id: int, to_currency_id: int
+    ) -> Optional[models.ExchangeRate]:
+        return db.query(models.ExchangeRate).filter(
+            models.ExchangeRate.from_currency_id == from_currency_id,
+            models.ExchangeRate.to_currency_id == to_currency_id
+        ).order_by(models.ExchangeRate.effective_date.desc()).first()
+
+
+# DMC CRUD
+class CRUDDMC(CRUDBase[models.DMC, schemas.DMCCreate, schemas.DMCUpdate]):
+    def get_active_dmcs(self, db: Session) -> List[models.DMC]:
+        return db.query(models.DMC).filter(models.DMC.is_active == True).all()
+    
+    def get_by_destination(self, db: Session, *, destination: str) -> List[models.DMC]:
+        return db.query(models.DMC).filter(
+            models.DMC.destination.ilike(f"%{destination}%"),
+            models.DMC.is_active == True
+        ).all()
+
+
+# Package CRUD
+class CRUDPackage(CRUDBase[models.Package, schemas.PackageCreate, schemas.PackageUpdate]):
+    def create_with_items(
+        self, db: Session, *, obj_in: schemas.PackageCreate
+    ) -> models.Package:
+        obj_in_data = obj_in.model_dump(exclude={"items"})
+        db_obj = models.Package(**obj_in_data)
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        
+        # Add items
+        if obj_in.items:
+            for item_data in obj_in.items:
+                item_dict = item_data.model_dump()
+                item_dict["package_id"] = db_obj.id
+                db_item = models.PackageItem(**item_dict)
+                db.add(db_item)
+            db.commit()
+            db.refresh(db_obj)
+        
+        return db_obj
+    
+    def get_active_packages(self, db: Session) -> List[models.Package]:
+        return db.query(models.Package).filter(models.Package.is_active == True).all()
 
 
 # Hotel CRUD
@@ -178,6 +241,10 @@ class CRUDQuote(CRUDBase[models.Quote, schemas.QuoteCreate, schemas.QuoteUpdate]
 
 
 # Initialize CRUD instances
+crud_currency = CRUDCurrency(models.Currency)
+crud_exchange_rate = CRUDExchangeRate(models.ExchangeRate)
+crud_dmc = CRUDDMC(models.DMC)
+crud_package = CRUDPackage(models.Package)
 crud_hotel = CRUDHotel(models.Hotel)
 crud_activity = CRUDActivity(models.Activity)
 crud_transfer = CRUDTransfer(models.Transfer)
