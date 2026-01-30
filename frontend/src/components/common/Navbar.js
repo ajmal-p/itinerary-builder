@@ -7,7 +7,7 @@ const Navbar = () => {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Itinerary Builder
+          Itinerary Builder v2.0
         </Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button color="inherit" component={RouterLink} to="/">
@@ -36,6 +36,9 @@ const Navbar = () => {
           </Button>
           <Button color="inherit" component={RouterLink} to="/quotes">
             Quotes
+          </Button>
+          <Button color="inherit" component={RouterLink} to="/currencies">
+            Currencies
           </Button>
         </Box>
       </Toolbar>

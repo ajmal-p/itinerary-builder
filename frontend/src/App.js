@@ -18,6 +18,7 @@ import EnquiryList from './components/enquiries/EnquiryList';
 import ItineraryList from './components/itineraries/ItineraryList';
 import ItineraryBuilder from './components/itineraries/ItineraryBuilder';
 import QuoteList from './components/quotes/QuoteList';
+import CurrencyManagement from './components/currencies/CurrencyManagement';
 
 const theme = createTheme({
   palette: {
@@ -48,6 +49,7 @@ function App() {
             <Route path="/itineraries" element={<ItineraryList />} />
             <Route path="/itineraries/:id" element={<ItineraryBuilder />} />
             <Route path="/quotes" element={<QuoteList />} />
+            <Route path="/currencies" element={<CurrencyManagement />} />
           </Routes>
         </Router>
       </AppProvider>
