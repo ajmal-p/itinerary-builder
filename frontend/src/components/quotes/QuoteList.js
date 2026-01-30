@@ -27,6 +27,7 @@ const QuoteList = () => {
 
   useEffect(() => {
     fetchQuotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleExportPDF = async (quoteId) => {

@@ -25,6 +25,7 @@ const TransferList = () => {
 
   useEffect(() => {
     fetchTransfers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDelete = async (id) => {

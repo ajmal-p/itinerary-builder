@@ -13,16 +13,16 @@ import {
 import { Add, Edit } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useApp } from '../../store/AppContext';
-import { itineraryService } from '../../services';
 import Loading from '../common/Loading';
 import ErrorMessage from '../common/ErrorMessage';
 
 const ItineraryList = () => {
   const { itineraries, fetchItineraries, loading } = useApp();
-  const [error, setError] = useState(null);
+  const [error] = useState(null);
 
   useEffect(() => {
     fetchItineraries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return <Loading />;

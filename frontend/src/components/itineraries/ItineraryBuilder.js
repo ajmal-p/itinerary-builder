@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -47,18 +47,7 @@ const ItineraryBuilder = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchHotels();
-    fetchActivities();
-    fetchTransfers();
-    fetchMeals();
-    
-    if (id && id !== 'new') {
-      loadItinerary();
-    }
-  }, [id]);
-
-  const loadItinerary = async () => {
+  const loadItinerary = useCallback(async () => {
     try {
       setLoading(true);
       const response = await itineraryService.getById(id);
@@ -74,7 +63,21 @@ const ItineraryBuilder = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchHotels();
+    fetchActivities();
+    fetchTransfers();
+    fetchMeals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (id && id !== 'new') {
+      loadItinerary();
+    }
+  }, [id, loadItinerary]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

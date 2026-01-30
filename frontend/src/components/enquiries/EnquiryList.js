@@ -26,6 +26,7 @@ const EnquiryList = () => {
 
   useEffect(() => {
     fetchEnquiries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDelete = async (id) => {

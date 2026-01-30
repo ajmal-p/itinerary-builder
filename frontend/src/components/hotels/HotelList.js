@@ -28,6 +28,7 @@ const HotelList = () => {
 
   useEffect(() => {
     fetchHotels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = () => {
